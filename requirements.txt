@@ -1,0 +1,10 @@
+Django==4.1.9
+psycopg2-binary==2.9.6
+Pillow==9.5.0
+ipython==8.14.0
+
+# extra
+django-cors-headers==3.14
+django-filter==23.1
+djangorestframework==3.14
+drf-yasg # swagger
