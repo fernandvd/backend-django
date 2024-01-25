@@ -16,3 +16,4 @@ djangorestframework-simplejwt[crypto]
 drf-yasg # swagger
 requests
 ipython
+PyJWT==2.8.0
