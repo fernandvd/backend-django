@@ -55,3 +55,14 @@ class AuthenticationAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('username', response.data)
         self.assertEqual('testusernamechanged', response.data.get('username'))
+
+    def test_list_user(self):
+        user = get_user_model().objects.create_user(**self.user_data)
+        url = reverse('authentication:user-list')
+
+        self.client.force_authenticate(user=user)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('results', response.data)
+        self.assertIn('count', response.data)
+        self.assertEqual(get_user_model().objects.count(), response.data.get("count"))

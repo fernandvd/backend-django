@@ -1,3 +1,6 @@
+from django.core.cache import cache
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import status 
 from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,6 +15,14 @@ from .models import User
 from .tasks import join_mail_new_welcome_user
 
 
+KEY_PREFIX_CACHE_LIST_USER = "list-user"
+
+def delete_cache_list_user():
+    redis_client = cache._cache.get_client()
+    all_keys = list(redis_client.scan_iter(match=f'*{KEY_PREFIX_CACHE_LIST_USER}*'))
+    cache.delete_many([key.decode('utf-8')[3:] for key in all_keys])
+
+
 class RegistrationAPIView(APIView):
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
@@ -22,8 +33,9 @@ class RegistrationAPIView(APIView):
 
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-
+        user = serializer.save()
+        delete_cache_list_user()
+        join_mail_new_welcome_user.delay(user.pk)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class LoginAPIView(APIView):
@@ -57,21 +69,16 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         serializer = self.serializer_class(instance, data=user_data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
+        delete_cache_list_user()
 
         return Response(serializer.data)
 
 
-class UserEmailListAPIView(ListAPIView):
-    queryset = User.objects.all()
+class UserListAPIView(ListAPIView):
+    queryset = User.objects.select_related('profile').all()
     serializer_class = UserSerializer
-    permission_classes = []
 
+    @method_decorator(cache_page(10*60, key_prefix=KEY_PREFIX_CACHE_LIST_USER))
     def list(self, request, *args, **kwargs):
-        random_user = User.objects.order_by('?').first()
-        if random_user:
-            with_welcome = request.query_params.get("with_welcome")
-            with_welcome = with_welcome in ["true", True, "1", 1, "True"]
-            #send_email_new_user.delay(random_user.username, random_user.email, random_user.created_at.isoformat(), with_welcome)
-            join_mail_new_welcome_user.delay(random_user.pk)
         return super().list(request, *args, **kwargs)
 

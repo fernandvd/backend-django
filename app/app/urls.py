@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
+from django.conf import settings
 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -45,4 +46,9 @@ urlpatterns = [
     path('api/', include('app.apps.profiles.urls', namespace='profiles')),
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        path("__debug__/", include("debug_toolbar.urls")),
+    ]
 
