@@ -21,6 +21,27 @@ services:
     
     depends_on:
       - db
+      - redis
+
+  celery:
+    build:
+      context: .
+      args:
+        - DEV=true
+
+    volumes:
+      - ./app:/app
+
+    command: >
+      sh -c "python manage.py celery_worker"
+    
+    env_file:
+      - .env
+    
+    depends_on:
+      - db
+      - redis
+
 
   db:
     image: postgres:15.2-alpine
@@ -35,6 +56,17 @@ services:
     #  POSTGRES_DB: ${POSTGRES_DB}
     env_file:
       - .env
+
+  mail:
+    container_name: mail
+    image: schickling/mailcatcher
+    ports:
+      - 1080:1080
+      - 1025:1025
+
+  redis:
+    image: redis:7.2-alpine
+    
 
 volumes:
   dev-db-data:

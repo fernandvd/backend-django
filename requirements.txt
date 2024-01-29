@@ -17,3 +17,5 @@ drf-yasg # swagger
 requests
 ipython
 PyJWT==2.8.0
+celery==5.3.6
+redis==5.0.1
