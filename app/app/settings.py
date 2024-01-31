@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-uf6rk_u@=+phn$koktjddq5xxuh!q$saq5rmlanto26-of1mqu'
+SECRET_KEY = os.environ.get("SECRET_KEY",'django-insecure-uf6rk_u@=+phn$koktjddq5xxuh!q$saq5rmlanto26-of1mqu')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG") in [True, "1", 1, "true", "True"]
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS","*").split(",")
 
 
 # Application definition
@@ -87,14 +89,13 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-import os
 
 DATABASES = {
     
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'HOST': os.environ.get("DB_HOST"),
-        'NAME': os.environ.get('DB_NAME'),
+        'NAME': os.environ.get('POSTGRES_DB'),
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
         "TEST": {
