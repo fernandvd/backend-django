@@ -44,6 +44,7 @@ urlpatterns = [
     path('api/', include('app.apps.articles.urls', namespace='articles')),
     path('api/', include('app.apps.authentication.urls', namespace='authentication')),
     path('api/', include('app.apps.profiles.urls', namespace='profiles')),
+    path('api/history/', include('app.apps.history.urls', namespace='history')),
 
 ]
 

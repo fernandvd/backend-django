@@ -164,3 +164,4 @@ cython_debug/
 
 #extra
 .ash_history
+.python_history

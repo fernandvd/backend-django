@@ -47,10 +47,12 @@ INSTALLED_APPS = [
     'app.apps.authentication',
     'app.apps.core',
     'app.apps.profiles',
+    'app.apps.history',
     
 ]
 
 MIDDLEWARE = [
+    'app.apps.core.middleware.history.HistoryMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -201,3 +203,19 @@ if DEBUG:
     import socket  # only if you haven't already imported this
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+
+from utils.constants import HEADER_USER_ANONYMOUS
+from corsheaders.defaults import default_headers
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://20.201.125.79:8000",
+    "http://20.201.125.79:8001",
+]
+
+CORS_ALLOW_HEADERS = (
+    *default_headers,
+    HEADER_USER_ANONYMOUS
+)
+
