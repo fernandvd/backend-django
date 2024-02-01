@@ -205,6 +205,10 @@ if DEBUG:
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
 
+if DEBUG == False:
+    #generate a static url
+    STATIC_ROOT = "static/"
+
 from utils.constants import HEADER_USER_ANONYMOUS
 from corsheaders.defaults import default_headers
 

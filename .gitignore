@@ -166,3 +166,7 @@ cython_debug/
 #extra
 .ash_history
 .python_history
+
+#static and media
+app/static/*
+app/media/*
